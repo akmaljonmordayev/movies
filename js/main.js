@@ -44,11 +44,19 @@ window.addEventListener("DOMContentLoaded", () => {
   // timer
   const deadline = "2024-03-11";
   function getTimeRemaining(endtime) {
-    const timer = Date.parse(endtime) - Date.parse(new Date()),
-      days = Math.floor(timer / (1000 * 60 * 60 * 24)),
-      hours = Math.floor((timer / (1000 * 60 * 60)) % 24),
-      minutes = Math.floor((timer / 1000 / 60) % 60),
+    let days, hours, minutes, seconds;
+    const timer = Date.parse(endtime) - Date.parse(new Date());
+    if (timer <= 0) {
+      days = 0;
+      hours = 0;
+      minutes = 0;
+      seconds = 0;
+    } else {
+      days = Math.floor(timer / (1000 * 60 * 60 * 24));
+      hours = Math.floor((timer / (1000 * 60 * 60)) % 24);
+      minutes = Math.floor((timer / 1000 / 60) % 60);
       seconds = Math.floor((timer / 1000) % 60);
+    }
     return {
       timer,
       days,
@@ -85,6 +93,42 @@ window.addEventListener("DOMContentLoaded", () => {
       }
     }
   }
-
   setClock(".timer", deadline);
+
+  // Modal
+  const modalTrigger = document.querySelectorAll(".read");
+  let modal = document.querySelector(".modal");
+  let modalCloseBtn = document.querySelector("[data-close]");
+
+  function closeModal() {
+    modal.style.display = "none";
+    document.body.style.overflow = "";
+  }
+
+  function openModal() {
+    modal.style.display = "block";
+    document.body.style.overflow = "hidden";
+    clearInterval(modalTimerId)
+  }
+
+  modalTrigger.forEach((item) => {
+    item.addEventListener("click", openModal);
+  });
+  modalCloseBtn.addEventListener("click", closeModal);
+  modal.addEventListener("click", function (e) {
+    if (e.target === modal) {
+      closeModal();
+    }
+  });
+
+  document.addEventListener("keydown", (event) => {
+    if (event.code === "Escape") {
+      closeModal();
+    }
+  });
+
+
+  const  modalTimerId = setTimeout(openModal, 5000)
+
+
 });
